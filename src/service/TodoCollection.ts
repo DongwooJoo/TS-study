@@ -1,4 +1,5 @@
-import TodoItem from "./TodoItem";
+import { ItemCounts } from "../model/ItemCounts";
+import TodoItem from "../model/TodoItem";
 
 class TodoCollection {
     private nextId: number = 1;
@@ -45,6 +46,15 @@ class TodoCollection {
                 this.itemMap.delete(item.id);
             }
         })
+    }
+
+    // 아이템 개수를 세는 메서드
+    // 1. 전체 할일 목록 카운트 / 2. 아직 완료되지 않은 할일 목록 카운트
+    getItemCounts(): ItemCounts {
+        return {
+            total: this.itemMap.size,
+            incomplete: this.getTodoItems(false).length
+        }
     }
 
     // todoitem의 상태를 변경하는 메서드
