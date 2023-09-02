@@ -4,7 +4,8 @@ class TodoItem {
     // 프로퍼티 타입 정의
     // 접근 지정자를 부여할 수 있음
     // private, public, protected
-    constructor(id, task, complete) {
+    constructor(id, task, complete = false // default parameter
+    ) {
         this.id = id;
         this.task = task;
         this.complete = complete;
