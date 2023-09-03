@@ -13,25 +13,33 @@ const data_1 = require("../data");
 const Commands_1 = require("../model/Commands");
 class TodoConsole {
     constructor() {
+        this.showCompleted = true;
         const sampleTodos = data_1.data.map((item) => new TodoItem_1.default(item.id, item.task, item.complete));
         this.todoCollection = new TodoCollection_1.default('My Todo List', sampleTodos);
     }
     displayTodoList() {
         console.log(`=====${this.todoCollection.userName}=====` +
             `(${this.todoCollection.getItemCounts().incomplete} items todo)`);
-        this.todoCollection.getTodoItems(true).forEach((item) => item.printDetails());
+        this.todoCollection
+            .getTodoItems(this.showCompleted)
+            .forEach((item) => item.printDetails());
     }
     promptUser() {
         console.clear();
         this.displayTodoList();
-        inquirer_1.default.prompt({
+        inquirer_1.default
+            .prompt({
             type: 'list',
             name: 'command',
             message: 'Choose option',
             choices: Object.values(Commands_1.Commands),
-        }).then((answer) => {
-            if (answer['command'] !== Commands_1.Commands.Quit) {
-                this.promptUser();
+        })
+            .then((answer) => {
+            switch (answer["command"]) {
+                case Commands_1.Commands.Toggle:
+                    this.showCompleted = !this.showCompleted;
+                    this.promptUser();
+                    break;
             }
         });
     }

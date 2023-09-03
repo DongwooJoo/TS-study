@@ -10,8 +10,10 @@ import { Commands } from '../model/Commands';
 class TodoConsole {
     private todoCollection: TodoCollection;
 
-    constructor() {
+    private showCompleted: boolean;
 
+    constructor() {
+        this.showCompleted = true;
         const sampleTodos: TodoItem[] = data.map(
             (item) => new TodoItem(item.id, item.task, item.complete)
         );
@@ -24,23 +26,47 @@ class TodoConsole {
             `=====${this.todoCollection.userName}=====` +
             `(${this.todoCollection.getItemCounts().incomplete} items todo)`
         )
-        this.todoCollection.getTodoItems(true).forEach((item) => item.printDetails());
+        this.todoCollection
+            .getTodoItems(this.showCompleted)
+            .forEach((item) => item.printDetails());
     }
 
     promptUser(): void{
         console.clear();
         this.displayTodoList();
 
-        inquirer.prompt({
+        inquirer
+            .prompt({
             type: 'list',
             name: 'command',
             message: 'Choose option',
             choices: Object.values(Commands),
-        }).then((answer) => {
-            if (answer['command'] !== Commands.Quit) {
-                this.promptUser();
-            }
+            })
+            .then((answer) => {
+                switch (answer["command"]) {
+                    case Commands.Toggle:
+                        this.showCompleted = !this.showCompleted;
+                        this.promptUser();
+                        break;
+                    case Commands.Add:
+                        this.promptAdd();
+                        break;
+                }
         });
+    }
+
+    promptAdd(): void {
+        console.clear();
+        inquirer.prompt({
+            type: "input",
+            name: "add",
+            message: "Enter task :"
+        }).then((answers) => {
+            if (answers["add"] !== "") {
+                this.todoCollection.addTodo(answers["add"]);
+            }
+            this.promptUser();
+        })
     }
 }
 
